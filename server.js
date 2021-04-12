@@ -6,7 +6,6 @@ const compression = require("compression");
 const express = require("express");
 export class App {
   constructor() {
-    window.setNavigationBarColor(0);
     this._app = express();
     this._app.use(compression());
     this.use = this._app.use.bind(this._app);

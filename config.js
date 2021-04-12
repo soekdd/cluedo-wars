@@ -6,7 +6,7 @@ module.exports = {
       image: "roomKanone.png",
     },
     {
-      name: "Munitionsbunker",
+      name: "Bunker",
       color: "1b1b20",
       image: "roomBunker.png",
     },
@@ -16,7 +16,7 @@ module.exports = {
       image: "roomGewaechshaus.png",
     },
     {
-      name: "Kommandozentrale",
+      name: "Zentrale",
       color: "d56921",
       image: "roomKommandozentrale.png",
     },
@@ -86,42 +86,42 @@ module.exports = {
   figures: [
     {
       name: "Biggs D",
-      color: "a611c0",
+      color: "ffde06",
       image: "figureBiggsDarklighter.png",
     },
     {
       name: "IG-88",
-      color: "a611c0",
+      color: "ffde06",
       image: "figureIG-88.png",
     },
     {
-      name: "ImpWache",
-      color: "a611c0",
+      name: "Rote Garde",
+      color: "ffde06",
       image: "figureImpWache.png",
     },
     {
-      name: "R2D2",
-      color: "a611c0",
+      name: "R2-D2",
+      color: "ffde06",
       image: "figureR2D2.png",
     },
     {
-      name: "ScarifRebel",
-      color: "a611c0",
+      name: "Rebel",
+      color: "ffde06",
       image: "figureScarifRebel.png",
     },
     {
-      name: "SchneeTrouper",
-      color: "a611c0",
+      name: "Truppler",
+      color: "ffde06",
       image: "figureSchneeTrouper.png",
     },
     {
-      name: "TiePilot",
-      color: "a611c0",
+      name: "Agt. Kallus",
+      color: "ffde06",
       image: "figureTiePilot.png",
     },
     {
       name: "Wookiee",
-      color: "a611c0",
+      color: "ffde06",
       image: "figureWookiee.png",
     },
   ],

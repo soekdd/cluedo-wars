@@ -139,7 +139,7 @@ class App {
   paintCard(id, type) {
     let s = "";
     let card = this.config[type + "s"][id];
-    s += `<div class="card" style="background:#${card.color}"><img class="cardPhoto" src="img/${card.image}"><img class="cardSymbol" src="img/${type}.png"><p class="cardTitle">${card.name}</p></div>`;
+    s += `<div class="card" style="border:2vw solid #${card.color}"><img class="cardPhoto" src="img/${card.image}"/><img class="cardSymbol" src="img/${type}.png"/><p class="cardTitle">${card.name}</p></div>`;
     return s;
   }
   clickBack() {
