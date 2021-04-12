@@ -1,4 +1,5 @@
 # Logs
+.history
 logs
 *.log
 npm-debug.log*
@@ -75,30 +76,25 @@ typings/
 # parcel-bundler cache (https://parceljs.org/)
 .cache
 
-# Next.js build output
-.next
+.DS_Store
+node_modules
+/dist
 
-# Nuxt.js build / generate output
-.nuxt
-dist
 
-# Gatsby files
-.cache/
-# Comment in the public line in if your project uses Gatsby and *not* Next.js
-# https://nextjs.org/blog/next-9-1#public-directory-support
-# public
+# local env files
+.env.local
+.env.*.local
 
-# vuepress build output
-.vuepress/dist
-
-# Serverless directories
-.serverless/
-
-# FuseBox cache
-.fusebox/
-
-# DynamoDB Local files
-.dynamodb/
-
-# TernJS port file
-.tern-port
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw? 
+fe_dist
+/.VSCodeCounter
+package-lock.json
+/.c9
+/config/ecosystem.config.js

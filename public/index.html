@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="theme-color" content="#000000" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+    <script
+      type="text/javascript"
+      src="/lib/qrcode-generator/qrcode.js"
+    ></script>
+    <script src="site.js"></script>
+    <link rel="stylesheet" href="site.css" />
+    <link
+      rel="stylesheet"
+      href="lib/bootstrap-icons/font/bootstrap-icons.css"
+    />
+    <link
+      rel="shortcut icon"
+      href="poison-bottle.svg"
+      type="image/svg"
+      rel="mask-icon"
+      color="white"
+    />
+  </head>
+  <body
+    onclick="app.resetTimer()"
+    onscroll="app.resetTimer()"
+    ontouchstart="app.resetTimer()"
+    ontouchmove="app.resetTimer()"
+    ontouchend="app.resetTimer()"
+  ></body>
+  <script>
+    var app = new App();
+  </script>
+</html>
