@@ -1,2 +1,2 @@
 # cluedo-wars
-replaces the cluedo card deck by small mobile webpage..
+Replaces the cluedo card deck by small mobile webpage.
