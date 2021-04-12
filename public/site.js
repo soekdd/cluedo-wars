@@ -195,24 +195,33 @@ class App {
       this.config = data;
     });
   };
-  getGame = (cb) => {
+  getGame(cb) {
     $.getJSON("/game/", (data) => {
       this.game = data;
+      this.config = data;
       if (cb) cb();
     });
-  };
-  startGame = (num) => {
+  }
+  startGame(num) {
     $.getJSON(`/startGame/${num}`, (data) => {
       this.game = data;
       this.master();
     });
-  };
+  }
+  endGame() {
+    this.resetMode = false;
+    let s = "";
+    ["figure", "weapon", "room"].forEach((group) => {
+      s += this.paintCard(this.game.murder[group].index, group);
+    });
+    $("body").html(s);
+  }
   master = () => {
     let s = "";
     for (let i = 3; i < 7; i++) {
       s += `<a href="#" onclick="app.startGame(${i})">${i}</a>&nbsp;`;
     }
-    s += "<br>";
+    s += `<a href="#" onclick="app.endGame()">Ende</a><br>`;
     for (let i = 0; i < this.game.playerNum; i++) {
       s += `<div class="qrPlayerFrame"><div class="qrPlaceholder" id="placeholder${i}">&nbsp;</div></div>`;
     }
