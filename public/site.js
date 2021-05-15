@@ -5,7 +5,7 @@ class App {
     this.resetTime = 2000 * 1;
     this.config = null;
     this.resetMode = false;
-    this.mode = "main";
+    this.mode = "splash";
     this.main();
     this.resetTimer();
   }
@@ -30,24 +30,48 @@ class App {
       this.alert();
     } else if (mode[0] == "show") {
       this.show();
+    } else if (mode[0] == "invalid") {
+      this.invalid();
+    } else if (mode[0] == "splash") {
+      this.splash();
     }
   };
   alert() {
     this.resetMode = false;
-    let s = `<h1>Dir wurde folgende Karte gezeigt:</h1><a href="#" onclick="app.resetAlert()">
+    let s = `<h2>Dir wurde folgende Karte gezeigt:</h2><a href="#" onclick="app.resetAlert()">
         ${this.paintCard(this.game.alert.index, this.game.alert.type)}</a>`;
     s += `<a href="#" onclick="app.resetAlert()" class="mainButton">Zurück</a><br>`;
     $("body").html(s);
   }
+  splash = () => {
+    this.resetMode = true;
+    let diff = new Date().getTime() - this.reset;
+    let width =
+      Math.floor((100 * (this.resetTime - diff)) / this.resetTime) + "%";
+    let s = `<h1>Cluedo Wars</h1><div class="progressbarOuter"><div class="progressbarInner" style="width:${width}"></div></div>`;
+    s += `<h2 style="margin-top:2em">Möge die Macht<br>&nbsp;<br>mit Dir sein,<br>&nbsp;<br>${this.game.name.replace(
+      "#",
+      ""
+    )}!</h2>`;
+    $("body").html(s);
+  };
   myCards = () => {
     this.resetMode = true;
     let diff = new Date().getTime() - this.reset;
     let width =
       Math.floor((100 * (this.resetTime - diff)) / this.resetTime) + "%";
-    let s = `<img class="titleImg" src="img/titleMy.png"><div class="progressbarOuter"><div class="progressbarInner" style="width:${width}"></div></div>`;
+    let s = `<h1>Meine Karten</h1><div class="progressbarOuter"><div class="progressbarInner" style="width:${width}"></div></div>`;
     s += `<a href="#" onclick="app.clickBack()" class="mainButton">Zurück</a><br>`;
-    this.game.cards.forEach((card) => {
-      s += this.paintCard(card.index, card.type);
+    this.config.figures.forEach((figure, index) => {
+      if (this.game.figures[index] == "own")
+        s += this.paintCard(index, "figure");
+    });
+    this.config.weapons.forEach((weapon, index) => {
+      if (this.game.weapons[index] == "own")
+        s += this.paintCard(index, "weapon");
+    });
+    this.config.rooms.forEach((room, index) => {
+      if (this.game.rooms[index] == "own") s += this.paintCard(index, "room");
     });
     $("body").html(s);
   };
@@ -56,28 +80,34 @@ class App {
     let diff = new Date().getTime() - this.reset;
     let width =
       Math.floor((100 * (this.resetTime - diff)) / this.resetTime) + "%";
-    let s = `<img class="titleImg" src="img/titleAll${subMode}.png"><div class="progressbarOuter"><div class="progressbarInner" style="width:${width}"></div></div>`;
+    let s = `<h1>Alle ${
+      { figure: "Figuren", room: "Räume", weapon: "Waffen" }[subMode]
+    }</h1><div class="progressbarOuter"><div class="progressbarInner" style="width:${width}"></div></div>`;
     s += `<a href="#" onclick="app.clickBack()" class="mainButton">Zurück</a><br>`;
     this.config[subMode + "s"].forEach((card, index) => {
       let icon = "circle";
       let color = "red";
-      let canGuess = 1;
-      if (this.ifCardOwn(index, subMode, "cards")) {
+      let canGuess = "guess1";
+      if (this.ifCardTagged(index, subMode, "own")) {
         icon = "check2-circle";
         color = "green";
         canGuess = 0;
-      } else if (this.ifCardOwn(index, subMode, "seen")) {
+      } else if (this.ifCardTagged(index, subMode, "seen")) {
         icon = "eye";
         color = "green";
         canGuess = 0;
-      } else if (this.ifCardOwn(index, subMode, "guess")) {
+      } else if (this.ifCardTagged(index, subMode, "guess1")) {
         icon = "question-circle";
         color = "orange";
-        canGuess = -1;
+        canGuess = "guess2";
+      } else if (this.ifCardTagged(index, subMode, "guess2")) {
+        icon = "exclamation-circle";
+        color = "green";
+        canGuess = "unknown";
       }
       let onClick = "";
       if (canGuess != 0)
-        onClick = `onClick="app.guessCard(${index},'${subMode}',${canGuess})"`;
+        onClick = `onClick="app.guessCard(${index},'${subMode}','${canGuess}')"`;
       s += `<div class="allCardsOuter" ${onClick}><div class="allCardsInner">${this.paintCard(
         index,
         subMode
@@ -86,30 +116,45 @@ class App {
     $("body").html(s);
   };
   guessCard(cardId, type, mode) {
-    $.getJSON(
-      `/${mode == 1 ? "guess" : "forget"}Card/${this.id}/${type}/${cardId}`,
-      (data) => {
-        this.game = data;
-        this.allCards(type);
-      }
-    );
-  }
-  ifCardOwn(index, type, group) {
-    let result = false;
-    this.game[group].forEach((card) => {
-      result = result || (card.index == index && card.type == type);
+    $.getJSON(`/tagCard/${this.id}/${type}/${cardId}/${mode}`, (data) => {
+      this.game = data;
+      this.allCards(type);
     });
-    return result;
   }
+  ifCardTagged(index, type, tag) {
+    return this.game[type + "s"][index] == tag;
+  }
+  invalid = () => {
+    this.resetMode = false;
+    let s = `<h1>Cluedo Wars</h1>`;
+    s += `<h2 style="margin-top:2em">Das Spiel ist nicht mehr aktuell, bitte neu scannen!<h2>`;
+    $("body").html(s);
+  };
   show = () => {
     this.resetMode = false;
-    let s = `<img class="titleImg" src="img/titleShow.png">`;
+    let s = `<h1>zEige Karte</h1>`;
     s += `<a href="#" onclick="app.clickBack()" class="mainButton">Zurück</a><br>`;
-    this.game.cards.forEach((card, index) => {
-      s += `<a href="#" onclick="app.showCard('${index}')">${this.paintCard(
-        card.index,
-        card.type
-      )}</a>`;
+
+    this.config.figures.forEach((figure, index) => {
+      if (this.game.figures[index] == "own")
+        s += `<a href="#" onclick="app.showCard('${index}',\'figure\')">${this.paintCard(
+          index,
+          "figure"
+        )}</a>`;
+    });
+    this.config.weapons.forEach((weapon, index) => {
+      if (this.game.weapons[index] == "own")
+        s += `<a href="#" onclick="app.showCard('${index}',\'weapon\')">${this.paintCard(
+          index,
+          "weapon"
+        )}</a>`;
+    });
+    this.config.rooms.forEach((room, index) => {
+      if (this.game.rooms[index] == "own")
+        s += `<a href="#" onclick="app.showCard('${index}',\'room\')">${this.paintCard(
+          index,
+          "room"
+        )}</a>`;
     });
     $("body").html(s);
   };
@@ -119,15 +164,15 @@ class App {
       this.playerMain();
     });
   }
-  showCard(cardId) {
-    $.getJSON(`/showCard/${this.id}/${cardId}`, (data) => {
+  showCard(cardId, type) {
+    $.getJSON(`/showCard/${this.id}/${type}/${cardId}`, (data) => {
       this.mode = "main";
       this.playerMain();
     });
   }
   playerMain = () => {
     this.resetMode = false;
-    let s = `<img class="titleImg" src="img/title.png">
+    let s = `<h1>Cluedo Wars</h1>
     <input id="playerId" onblur="app.changeUserName($('#playerId').val())" value="${this.game.name}"/>
     <a href="#" onclick="app.clickMyCards()" class="mainButton"><img class="cardSymbol" src="img/my.png"/><span class="text">Meine Karten</span><img class="cardSymbolR" src="img/my.png"></a><br>
     <a href="#" onclick="app.clickAllCards('figure')" class="mainButton"><img class="cardSymbol" src="img/figure.png"/><span class="text">Alle Figuren</span><img class="cardSymbolR" src="img/figure.png"></a><br>
@@ -159,8 +204,9 @@ class App {
     this.allCards(subMode);
   };
   getPlayer = (cb) => {
+    let that = this;
     $.getJSON(
-      `/myGame/${this.id}/game/${
+      `/api/${this.id}/game/${
         this.game == null || this.game.rev == undefined ? -1 : this.game.rev
       }`,
       (data) => {
@@ -188,11 +234,18 @@ class App {
           this.player();
         }
       }
-    );
+    ).fail(function (e) {
+      if (e.responseText == "unknown player") that.mode = "invalid";
+      that.player();
+    });
   };
   getConfig = (cb) => {
-    $.getJSON(`/myGame/${this.id}/config`, (data) => {
+    let that = this;
+    $.getJSON(`/api/${this.id}/config`, (data) => {
       this.config = data;
+    }).fail(function (e) {
+      if (e.responseText == "unknown player") that.mode = "invalid";
+      that.player();
     });
   };
   getGame(cb) {

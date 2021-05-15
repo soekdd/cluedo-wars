@@ -43,7 +43,7 @@ module.exports = {
   ],
   weapons: [
     {
-      name: "Giftspinne",
+      name: "Assassin Spider",
       color: "599bb3",
       image: "weaponSpinne.png",
     },
@@ -53,7 +53,7 @@ module.exports = {
       image: "weaponPistole.png",
     },
     {
-      name: "Laserschwert",
+      name: "Lichtschwert",
       color: "599bb3",
       image: "weaponLaserschwert.png",
     },
@@ -68,12 +68,12 @@ module.exports = {
       image: "weaponDoppelaxt.png",
     },
     {
-      name: "Gift",
+      name: "Synox (Gift)",
       color: "599bb3",
       image: "weaponGift.png",
     },
     {
-      name: "Schwert",
+      name: "Ninjaschwert",
       color: "599bb3",
       image: "weaponSchwert.png",
     },
@@ -85,43 +85,43 @@ module.exports = {
   ],
   figures: [
     {
-      name: "Biggs D",
-      color: "ffde06",
+      name: "Snap Wexley",
+      color: "ffd200",
       image: "figureBiggsDarklighter.png",
     },
     {
       name: "IG-88",
-      color: "ffde06",
+      color: "ffd200",
       image: "figureIG-88.png",
     },
     {
       name: "Rote Garde",
-      color: "ffde06",
+      color: "ffd200",
       image: "figureImpWache.png",
     },
     {
       name: "R2-D2",
-      color: "ffde06",
+      color: "ffd200",
       image: "figureR2D2.png",
     },
     {
-      name: "Rebel",
-      color: "ffde06",
+      name: "Scarif Rebel",
+      color: "ffd200",
       image: "figureScarifRebel.png",
     },
     {
-      name: "Truppler",
-      color: "ffde06",
+      name: "Gebirgstruppler",
+      color: "ffd200",
       image: "figureSchneeTrouper.png",
     },
     {
       name: "Agt. Kallus",
-      color: "ffde06",
+      color: "ffd200",
       image: "figureTiePilot.png",
     },
     {
       name: "Wookiee",
-      color: "ffde06",
+      color: "ffd200",
       image: "figureWookiee.png",
     },
   ],

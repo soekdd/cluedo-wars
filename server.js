@@ -94,10 +94,8 @@ export class App {
           .toUpperCase();
       players[playerID] = {
         rev: 0,
-        name: "Spieler #" + (i + 1),
+        name: "Spieler " + (i + 1),
         cards: [],
-        seen: [],
-        guess: [],
         leftPlayer,
       };
       leftPlayer = playerID;
@@ -114,6 +112,25 @@ export class App {
       allCards.shift();
       i = (i + 1) % playerNum;
     } while (allCards.length > 0);
+    Object.values(players).forEach((player) => {
+      player.rooms = [];
+      for (let r = 0; r < this.game.rooms.length; r++) {
+        player.rooms[r] = "unknown";
+      }
+      player.weapons = [];
+      for (let w = 0; w < this.game.weapons.length; w++) {
+        player.weapons[w] = "unknown";
+      }
+      player.figures = [];
+      for (let f = 0; f < this.game.figures.length; f++) {
+        player.figures[f] = "unknown";
+      }
+      player.cards.forEach((card) => {
+        if (card.type == "figure") player.figures[card.index] = "own";
+        else if (card.type == "room") player.rooms[card.index] = "own";
+        else if (card.type == "weapon") player.weapons[card.index] = "own";
+      });
+    });
     this.game.players = players;
     this.pause = false;
   }
@@ -147,9 +164,9 @@ export class App {
     });
     this.get(
       [
-        "/myGame/:playerID",
-        "/myGame/:playerID/:option",
-        "/myGame/:playerID/:option/:rev",
+        "/api/:playerID/",
+        "/api/:playerID/:option",
+        "/api/:playerID/:option/:rev",
       ],
       async (req, res) => {
         if (this.pause) {
@@ -173,9 +190,9 @@ export class App {
             game: {
               rev: player.rev,
               name: player.name,
-              cards: player.cards,
-              seen: player.seen,
-              guess: player.guess,
+              rooms: player.rooms,
+              weapons: player.weapons,
+              figures: player.figures,
               alert: player.alert,
             },
           };
@@ -210,32 +227,7 @@ export class App {
         this.happyEnd(res, "ok");
       }
     });
-    this.get("/showCard/:playerID/:cardID", async (req, res) => {
-      if (this.pause) {
-        this.happyEnd(res, "");
-        return;
-      }
-      if (this.game.players[req.params.playerID] == undefined)
-        this.end404(res, "unknown player");
-      else {
-        let player = this.game.players[req.params.playerID];
-        if (player.cards[req.params.cardID] == undefined)
-          this.end404(res, "unknown card");
-        else {
-          this.game.players[player.leftPlayer].seen.push(
-            player.cards[req.params.cardID]
-          );
-          console.log("set alert on ", player.leftPlayer);
-          this.game.players[player.leftPlayer].alert =
-            player.cards[req.params.cardID];
-          this.game.players[player.leftPlayer].rev++;
-          player.cards[req.params.cardID].shown = true;
-          player.rev++;
-          this.happyEnd(res, "ok");
-        }
-      }
-    });
-    this.get("/guessCard/:playerID/:cardType/:cardNumber", async (req, res) => {
+    this.get("/showCard/:playerID/:cardType/:cardNumber", async (req, res) => {
       if (this.pause) {
         this.happyEnd(res, "");
         return;
@@ -245,32 +237,29 @@ export class App {
       else {
         let player = this.game.players[req.params.playerID];
         if (
-          config[req.params.cardType + "s"] == undefined ||
-          config[req.params.cardType + "s"][req.params.cardNumber] == undefined
+          this.game.players[player.leftPlayer][req.params.cardType + "s"] ==
+            undefined ||
+          this.game.players[player.leftPlayer][req.params.cardType + "s"][
+            req.params.cardNumber
+          ] == undefined
         )
           this.end404(res, "unknown card");
         else {
-          let gotAllready = -1;
-          player.guess.forEach((card, index) => {
-            if (
-              card.type == req.params.cardType &&
-              card.index == req.params.cardNumber
-            )
-              gotAllready = index;
-          });
-          if (gotAllready == -1)
-            player.guess.push({
-              ...config[req.params.cardType + "s"][req.params.cardNumber],
-              index: req.params.cardNumber,
-              type: req.params.cardType,
-            });
-          player.rev++;
-          this.happyEnd(res, player);
+          this.game.players[player.leftPlayer][req.params.cardType + "s"][
+            req.params.cardNumber
+          ] = "seen";
+
+          this.game.players[player.leftPlayer].alert = {
+            type: req.params.cardType,
+            index: req.params.cardNumber,
+          };
+          this.game.players[player.leftPlayer].rev++;
+          this.happyEnd(res, "ok");
         }
       }
     });
     this.get(
-      "/forgetCard/:playerID/:cardType/:cardNumber",
+      "/tagCard/:playerID/:cardType/:cardNumber/:tag",
       async (req, res) => {
         if (this.pause) {
           this.happyEnd(res, "");
@@ -281,21 +270,19 @@ export class App {
         else {
           let player = this.game.players[req.params.playerID];
           if (
-            config[req.params.cardType + "s"] == undefined ||
-            config[req.params.cardType + "s"][req.params.cardNumber] ==
+            player[req.params.cardType + "s"] == undefined ||
+            player[req.params.cardType + "s"][req.params.cardNumber] ==
               undefined
           )
             this.end404(res, "unknown card");
           else {
-            let gotAllready = -1;
-            player.guess.forEach((card, index) => {
-              if (
-                card.type == req.params.cardType &&
-                card.index == req.params.cardNumber
-              )
-                gotAllready = index;
-            });
-            if (gotAllready != -1) player.guess.splice(gotAllready, 1);
+            if (
+              player[req.params.cardType + "s"][req.params.cardNumber] !=
+                "own" &&
+              player[req.params.cardType + "s"][req.params.cardNumber] != "seen"
+            )
+              player[req.params.cardType + "s"][req.params.cardNumber] =
+                req.params.tag;
             player.rev++;
             this.happyEnd(res, player);
           }
